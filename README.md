@@ -1,5 +1,4 @@
 # Описание
-___
 
 <img src=https://img.shields.io/badge/Vaadin-blue></img>
 <img src=https://img.shields.io/badge/Spring--boot-green></img>
