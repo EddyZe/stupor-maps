@@ -22,9 +22,6 @@ import software.xdev.vaadin.maps.leaflet.registry.LDefaultComponentManagementReg
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 
 
 @Route("")
@@ -32,7 +29,8 @@ public class Maps extends VerticalLayout {
     private final String ID = "myMap";
     private final LComponentManagementRegistry reg;
 
-    private final Queue<Coordinates> pointsPolygon = new ConcurrentLinkedQueue<>();
+    private List<Coordinates> pointsPolygonCoordinates = new ArrayList<>();
+    private List<LMarker> markers = new ArrayList<>();
 
     private final LMap map;
 
@@ -60,13 +58,20 @@ public class Maps extends VerticalLayout {
 
         Button createPolygon = new Button("Create polygon", this::creatingPolygon);
         Button addPoint = new Button("Add point", ev -> map.on("click", clickFuncReference));
+        Button cancelCreatingPolygon = new Button("Cancel creating polygon", this::cancelCreatingPolygon);
+        Button deleteLastPoint = new Button("Delete last point", this::deleteLastPoint);
 
-        hlButtons.add(addPoint);
-        hlButtons.add(createPolygon);
+        hlButtons.add(addPoint, createPolygon, deleteLastPoint, cancelCreatingPolygon);
         hlButtons.setWidthFull();
 
         return hlButtons;
     }
+
+    private void deleteLastPoint(ClickEvent<Button> buttonClickEvent) {
+            pointsPolygonCoordinates.remove(pointsPolygonCoordinates.size()-1);
+            map.removeLayer(markers.remove(markers.size()-1));
+    }
+
     private LMap configureMap() {
         final LMap map;
         final MapContainer mapContainer = new MapContainer(reg);
@@ -87,16 +92,28 @@ public class Maps extends VerticalLayout {
 
         List<LLatLng> lLatLngs = new ArrayList<>();
 
-        while (!pointsPolygon.isEmpty()) {
-            Coordinates coordinates = pointsPolygon.poll();
+        for (Coordinates coordinates : pointsPolygonCoordinates) {
             lLatLngs.add(new LLatLng(reg, coordinates.getX(), coordinates.getY()));
 
-            System.out.printf("%d. x = %s, y = %s%n", count, coordinates.getX(), coordinates.getY());
-            count++;
+            System.out.printf("%d. x = %s, y = %s%n",
+                    count,
+                    coordinates.getX(),
+                    coordinates.getY());
+            count ++;
         }
+
+        markers.forEach(map::removeLayer);
 
         LPolygon lPolygon = new LPolygon(reg, lLatLngs);
         map.addLayer(lPolygon);
+
+        markers.clear();
+        pointsPolygonCoordinates.clear();
+    }
+    private void cancelCreatingPolygon(ClickEvent<Button> click) {
+        markers.forEach(map::removeLayer);
+        markers.clear();
+        pointsPolygonCoordinates.clear();
     }
 
     private LIcon createIconMarker() {
@@ -115,7 +132,11 @@ public class Maps extends VerticalLayout {
         lMarker.setIcon(createIconMarker());
 
         map.addLayer(lMarker);
-        pointsPolygon.add(new Coordinates(x, y));
+        markers.add(lMarker);
 
+        Coordinates coordinates = new Coordinates(x, y);
+
+        if (!pointsPolygonCoordinates.contains(coordinates))
+            pointsPolygonCoordinates.add(new Coordinates(x, y));
     }
 }
