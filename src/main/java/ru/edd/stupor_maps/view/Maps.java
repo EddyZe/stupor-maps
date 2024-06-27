@@ -29,8 +29,8 @@ public class Maps extends VerticalLayout {
     private final String ID = "myMap";
     private final LComponentManagementRegistry reg;
 
-    private List<Coordinates> pointsPolygonCoordinates = new ArrayList<>();
-    private List<LMarker> markers = new ArrayList<>();
+    private final List<Coordinates> pointsPolygonCoordinates = new ArrayList<>();
+    private final List<LMarker> markers = new ArrayList<>();
 
     private final LMap map;
 
