@@ -152,6 +152,6 @@ public class Maps extends VerticalLayout {
         Coordinates coordinates = new Coordinates(x, y);
 
         if (!pointsPolygonCoordinates.contains(coordinates))
-            pointsPolygonCoordinates.add(new Coordinates(x, y));
+            pointsPolygonCoordinates.add(coordinates);
     }
 }
