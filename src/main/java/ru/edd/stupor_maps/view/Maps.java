@@ -69,7 +69,8 @@ public class Maps extends VerticalLayout {
 
     private void deleteLastPoint(ClickEvent<Button> buttonClickEvent) {
             pointsPolygonCoordinates.remove(pointsPolygonCoordinates.size()-1);
-            map.removeLayer(markers.remove(markers.size()-1));
+            map.removeLayer(markers.get(markers.size()-1));
+            markers.remove(markers.size()-1);
     }
 
     private LMap configureMap() {
@@ -132,7 +133,9 @@ public class Maps extends VerticalLayout {
         lMarker.setIcon(createIconMarker());
 
         map.addLayer(lMarker);
-        markers.add(lMarker);
+
+        if (!markers.contains(lMarker))
+            markers.add(lMarker);
 
         Coordinates coordinates = new Coordinates(x, y);
 
