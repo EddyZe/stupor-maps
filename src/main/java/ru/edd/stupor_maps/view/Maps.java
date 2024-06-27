@@ -50,12 +50,6 @@ public class Maps extends VerticalLayout {
     }
 
     private HorizontalLayout creatingButtonLayout() {
-        String clickFuncReference =
-                "e => document.getElementById('%s').$server.mapClicked(e.latlng.lat, e.latlng.lng)".formatted(ID);
-
-        reg.execJs(clickFuncReference);
-        map.on("click", clickFuncReference);
-
         final HorizontalLayout hlButtons = new HorizontalLayout();
 
         Button createPolygon = new Button("Create polygon", this::creatingPolygon);
@@ -70,9 +64,11 @@ public class Maps extends VerticalLayout {
     }
 
     private void deleteLastPoint(ClickEvent<Button> buttonClickEvent) {
+        if (!pointsPolygonCoordinates.isEmpty())
             pointsPolygonCoordinates.remove(pointsPolygonCoordinates.size()-1);
-            map.removeLayer(markers.get(markers.size()-1));
-            markers.remove(markers.size()-1);
+
+        if (!markers.isEmpty())
+            map.removeLayer(markers.remove(markers.size()-1));
     }
 
     private LMap configureMap() {
@@ -86,10 +82,20 @@ public class Maps extends VerticalLayout {
         map.addLayer(LTileLayer.createDefaultForOpenStreetMapTileServer(reg));
 
         map.setView(new LLatLng(reg, 55.75, 37.6), 15);
+
+        String clickFuncReference =
+                "e => document.getElementById('%s').$server.mapClicked(e.latlng.lat, e.latlng.lng)".formatted(ID);
+
+        reg.execJs(clickFuncReference);
+        map.on("click", clickFuncReference);
+
         return map;
     }
 
     private void creatingPolygon(ClickEvent<Button> click) {
+        if (pointsPolygonCoordinates.isEmpty() || markers.isEmpty())
+            return;
+
         System.out.println("Координаты созданного полигона: ");
         int count = 1;
 
@@ -114,9 +120,13 @@ public class Maps extends VerticalLayout {
         pointsPolygonCoordinates.clear();
     }
     private void cancelCreatingPolygon(ClickEvent<Button> click) {
-        markers.forEach(map::removeLayer);
-        markers.clear();
-        pointsPolygonCoordinates.clear();
+        if (!markers.isEmpty()) {
+            markers.forEach(map::removeLayer);
+            markers.clear();
+        }
+
+        if (!pointsPolygonCoordinates.isEmpty())
+            pointsPolygonCoordinates.clear();
     }
 
     private LIcon createIconMarker() {
