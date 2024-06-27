@@ -29,6 +29,8 @@ public class Maps extends VerticalLayout {
     private final String ID = "myMap";
     private final LComponentManagementRegistry reg;
 
+    private boolean isAddedPoints = false;
+
     private final List<Coordinates> pointsPolygonCoordinates = new ArrayList<>();
     private final List<LMarker> markers = new ArrayList<>();
 
@@ -53,15 +55,16 @@ public class Maps extends VerticalLayout {
                 "e => document.getElementById('%s').$server.mapClicked(e.latlng.lat, e.latlng.lng)".formatted(ID);
 
         reg.execJs(clickFuncReference);
+        map.on("click", clickFuncReference);
 
         final HorizontalLayout hlButtons = new HorizontalLayout();
 
         Button createPolygon = new Button("Create polygon", this::creatingPolygon);
-        Button addPoint = new Button("Add point", ev -> map.on("click", clickFuncReference));
+
         Button cancelCreatingPolygon = new Button("Cancel creating polygon", this::cancelCreatingPolygon);
         Button deleteLastPoint = new Button("Delete last point", this::deleteLastPoint);
 
-        hlButtons.add(addPoint, createPolygon, deleteLastPoint, cancelCreatingPolygon);
+        hlButtons.add(createPolygon, deleteLastPoint, cancelCreatingPolygon);
         hlButtons.setWidthFull();
 
         return hlButtons;
