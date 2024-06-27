@@ -5,8 +5,10 @@
 <img src=https://img.shields.io/badge/lombok-red></img>
 <img src=https://img.shields.io/badge/Java-orange></img>
 
-<img src="screens/2024-06-27_10-58-39.png"></img>
+<img src="screens/2024-06-27_13-55-47.png"></img>
 Программа по заданным точкам выделяет полигон на карте и выводит координаты создавшегося полигона в консоль.
+
+Укажите на карте точки затем нажмите "Create polygon".
 
 
 
